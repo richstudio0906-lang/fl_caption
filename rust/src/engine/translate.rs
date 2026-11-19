@@ -579,13 +579,16 @@ impl ApiClient {
                 })
             })
             .collect();
-        let body = serde_json::json!({
+        let mut body = serde_json::json!({
             "model": self.config.model,
             "messages": messages,
             "temperature": self.config.temperature,
             "max_tokens": max_tokens,
             "stream": true,
         });
+        if self.url().contains("deepseek.com") {
+            body["thinking"] = serde_json::json!({ "type": "disabled" });
+        }
         let mut request = self.client.post(self.url()).json(&body);
         if !self.config.api_key.trim().is_empty() {
             request = request.bearer_auth(self.config.api_key.trim());
