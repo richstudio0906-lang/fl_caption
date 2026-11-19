@@ -58,22 +58,11 @@ jobs:
       - name: Rust tests
         working-directory: fl_caption/rust
         run: cargo test --lib
-
-      - name: Prefetch ONNX Runtime
-        if: runner.os == 'Windows'
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          mkdir -p build/ort-cache
-          gh release download v1.31.0 -R microsoft/onnxruntime \
-            -p onnxruntime-win-x64-1.31.0.zip \
-            -p onnxruntime-win-x64-gpu_cuda12-1.31.0.zip \
-            -D build/ort-cache --clobber
-          ls -l build/ort-cache
       
       - name: ONNX Runtime
-        run: python scripts/fetch_onnxruntime.py
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/fetch_ort_ci.py
 
       - name: Build (Windows)
         if: runner.os == 'Windows'
